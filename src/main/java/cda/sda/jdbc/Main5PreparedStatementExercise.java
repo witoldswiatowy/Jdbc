@@ -29,6 +29,8 @@ public class Main5PreparedStatementExercise {
         }
         resultSet.close();
 
+//        statement.executeUpdate("DELETE FROM user");
+
         preparedStatement.close();
         connection.close();
     }
