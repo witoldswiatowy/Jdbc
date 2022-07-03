@@ -11,10 +11,22 @@ public class Main6Injection {
         System.out.println(login(connection, "Ala", "password2")); //true
         System.out.println(login(connection, "Ala", "wrongPassword")); //false
 
-        System.out.println(login(connection, "Ala", "' OR '1'='1")); //false ///looooooooooool
+        System.out.println(login(connection, "Ala", "' OR '1'='1")); //false //looooooooooool jednak true
         //SELECT * FROM user WHERE username = 'Ala' AND password = '' OR '1'='1'
+        System.out.println(securedLogin(connection, "Ala", "' OR '1'='1")); //false -> zabezpieczenie
 
         connection.close();
+    }
+
+    private static boolean securedLogin(Connection connection, String username, String password) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECt * FROM user WHERE username = ? AND password = ?");
+        preparedStatement.setString(1, username);
+        preparedStatement.setString(2, password);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        boolean isLogged = resultSet.next();
+        resultSet.close();
+        preparedStatement.close();
+        return isLogged;
     }
 
     private static boolean login(Connection connection, String username, String password) throws SQLException {
