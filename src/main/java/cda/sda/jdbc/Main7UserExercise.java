@@ -1,4 +1,6 @@
-package cda.sda.jdbc.model;
+package cda.sda.jdbc;
+
+import cda.sda.jdbc.model.User;
 
 import java.sql.*;
 import java.util.ArrayList;
