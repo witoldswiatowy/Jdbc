@@ -2,10 +2,7 @@ package cda.sda.jdbc.DAO;
 
 import cda.sda.jdbc.model.Task;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -30,12 +27,38 @@ public class TaskDAO implements AutoCloseable {
 
     public void create(Task task) throws SQLException {
         // tworzymy nowy task w bazie danych na podstawie informacji z argumentu
+        try {
+        connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        Statement statement = connection.createStatement();
+        statement.executeUpdate("INSERT INTO task(id, description, user_id) VALUE" +
+                "('" + task.getId() + "','" + task.getDescription() + "','" + task.getUserId() + "')");
+        statement.close();
+            System.out.println("Task: " + task.getId() + " został dodany");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public Optional<Task> read(long id) throws SQLException {
         // wyciągamy dane z bazy na podstawie id taska i przypisujemy do obiektu klasy Task
         // jeśli znajdzie wiersz to zwracamy Optional.of(new Task(...))
         // jeśli nie znajdzie to Optional.empty()
+        try {
+            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT " + id + " FROM task");
+            Optional<Task> task = Optional.empty();
+            while (resultSet.next()) {
+                task = Optional.of(new Task(
+                        resultSet.getLong("id"),
+                        resultSet.getString("description"),
+                        resultSet.getLong("user_id")));
+            }
+            resultSet.close();
+            return task;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return Optional.empty();
     }
 
